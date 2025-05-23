@@ -8,6 +8,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.stage.Stage;
 import javafx.scene.transform.Rotate;
+import java.lang.Math;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +18,15 @@ public class Physics3DApp extends Application {
     private List<Box> bodyMeshes = new ArrayList<>();
     private Group root = new Group();
 
+
     @Override
     public void start(Stage primaryStage) {
         // Add initial bodies
-        for (int i = 0; i < 5; i++) {
-            addCube(new Vector3(i * 2 - 4, 5 + i, 0));
-        }
+
+            for (int i = 0; i < 5; i++){
+                addCube(new Vector3(((Math.random() * 20) -10), 5 + i, ((Math.random() * 20) -10)));
+            }
+
 
         // Add ground plane
         RigidBody ground = new RigidBody(new Vector3(0, 0, 0), 0, true);
