@@ -32,13 +32,12 @@ public class PhysicsEngine {
         // Basic cube collision (AABB)
         for (int i = 0; i < bodies.size(); i++) {
             RigidBody a = bodies.get(i);
+            if (a.isStatic) continue;
             for (int j = i + 1; j < bodies.size(); j++) {
                 RigidBody b = bodies.get(j);
-
-                if (a == b) continue;
+                if (b.isStatic) continue;
 
                 if (isColliding(a, b)) {
-                    resolvePenetration(a, b);
                     resolveCollision(a, b);
                 }
             }
@@ -52,51 +51,15 @@ public class PhysicsEngine {
                 Math.abs(a.position.z - b.position.z) < a.size;
     }
 
-    private void resolvePenetration(RigidBody a, RigidBody b) {
-        Vector3 delta = b.position.subtract(a.position);
-
-        double overlapX = a.size - Math.abs(delta.x);
-        double overlapY = a.size - Math.abs(delta.y);
-        double overlapZ = a.size - Math.abs(delta.z);
-
-        double minOverlap = Math.min(overlapX, Math.min(overlapY, overlapZ));
-        Vector3 mtv = new Vector3(0, 0, 0);
-
-        if (minOverlap == overlapX) {
-            mtv = new Vector3(Math.signum(delta.x), 0, 0).multiply(minOverlap);
-        } else if (minOverlap == overlapY) {
-            mtv = new Vector3(0, Math.signum(delta.y), 0).multiply(minOverlap);
-        } else {
-            mtv = new Vector3(0, 0, Math.signum(delta.z)).multiply(minOverlap);
-        }
-
-        if (a.isStatic && !b.isStatic) {
-            b.position = b.position.add(mtv);
-        } else if (!a.isStatic && b.isStatic) {
-            a.position = a.position.subtract(mtv);
-        } else if (!a.isStatic && !b.isStatic) {
-            a.position = a.position.subtract(mtv.multiply(0.5));
-            b.position = b.position.add(mtv.multiply(0.5));
-        }
-    }
-
     private void resolveCollision(RigidBody a, RigidBody b) {
-        Vector3 normal = b.position.subtract(a.position).normalize();
-        Vector3 relativeVelocity = b.velocity.subtract(a.velocity);
-        double velocityAlongNormal = relativeVelocity.dot(normal);
-
-        if (velocityAlongNormal > 0) return;
-
-        double restitution = 0.5;
-        double invMassA = a.isStatic ? 0 : 1.0 / a.mass;
-        double invMassB = b.isStatic ? 0 : 1.0 / b.mass;
-
-        double impulseMagnitude = -(1 + restitution) * velocityAlongNormal;
-        impulseMagnitude /= (invMassA + invMassB);
-
-        Vector3 impulse = normal.multiply(impulseMagnitude);
-
-        if (!a.isStatic) a.velocity = a.velocity.subtract(impulse.multiply(invMassA));
-        if (!b.isStatic) b.velocity = b.velocity.add(impulse.multiply(invMassB));
+        Vector3 delta = b.position.subtract(a.position);
+        Vector3 normal = new Vector3(
+                Math.signum(delta.x),
+                Math.signum(delta.y),
+                Math.signum(delta.z)
+        );
+        Vector3 response = normal.multiply(0.1);
+        a.velocity = a.velocity.subtract(response);
+        b.velocity = b.velocity.add(response);
     }
 }

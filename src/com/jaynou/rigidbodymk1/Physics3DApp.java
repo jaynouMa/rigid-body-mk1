@@ -2,13 +2,18 @@ package com.jaynou.rigidbodymk1;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
-import javafx.stage.Stage;
 import javafx.scene.transform.Rotate;
-import java.lang.Math;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +26,9 @@ public class Physics3DApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // Add initial bodies
-
-            for (int i = 0; i < 5; i++){
-                addCube(new Vector3(((Math.random() * 20) -10), 5 + i, ((Math.random() * 20) -10)));
-            }
-
+        for (int i = 0; i < 5; i++) {
+            addCube(new Vector3(((Math.random() * 20) - 10), 5 + i, ((Math.random() * 20) - 10)));
+        }
 
         // Add ground plane
         RigidBody ground = new RigidBody(new Vector3(0, 0, 0), 0, true);
@@ -44,22 +46,46 @@ public class Physics3DApp extends Application {
         camera.setNearClip(0.1);
         camera.setFarClip(1000);
         Rotate rotateX = new Rotate(-25, Rotate.X_AXIS);
-        Rotate rotateY = new Rotate(16, Rotate.Y_AXIS);// Look downward
-          // Turn toward center
-        camera.getTransforms().addAll(rotateX,rotateY);
+        Rotate rotateY = new Rotate(16, Rotate.Y_AXIS);
+        camera.getTransforms().addAll(rotateX, rotateY);
 
         SubScene subScene = new SubScene(root, 800, 600, true, SceneAntialiasing.BALANCED);
         subScene.setCamera(camera);
         subScene.setFill(Color.LIGHTGRAY);
 
-        Group mainRoot = new Group();
-        mainRoot.getChildren().add(subScene);
+        // === UI CONTROLS ===
+        TextField xField = new TextField("0");
+        TextField yField = new TextField("10");
+        TextField zField = new TextField("0");
+        Button spawnButton = new Button("Spawn Cube");
 
-        Scene scene = new Scene(mainRoot);
+        HBox controls = new HBox(10, new Label("X:"), xField, new Label("Y:"), yField, new Label("Z:"), zField, spawnButton);
+        controls.setPadding(new Insets(10));
+        controls.setStyle("-fx-background-color: rgba(255,255,255,0);");
+
+        // Action for spawn button
+        spawnButton.setOnAction(e -> {
+            try {
+                double x = Double.parseDouble(xField.getText());
+                double y = Double.parseDouble(yField.getText());
+                double z = Double.parseDouble(zField.getText());
+                addCube(new Vector3(x, y, z));
+            } catch (NumberFormatException ex) {
+                System.out.println("Invalid input");
+            }
+        });
+
+        // Layout
+        StackPane layout = new StackPane();
+        layout.getChildren().addAll(subScene, controls);
+        StackPane.setMargin(controls, new Insets(10));
+
+        Scene scene = new Scene(layout, 800, 600);
         primaryStage.setTitle("JavaFX 3D Rigid Body Simulator");
         primaryStage.setScene(scene);
         primaryStage.show();
 
+        // === PHYSICS SIMULATION LOOP ===
         AnimationTimer timer = new AnimationTimer() {
             long lastTime = System.nanoTime();
             @Override
