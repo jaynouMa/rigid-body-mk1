@@ -53,7 +53,7 @@ public class Physics3DApp extends Application {
         subScene.setCamera(camera);
         subScene.setFill(Color.LIGHTGRAY);
 
-        // === UI CONTROLS ===
+        // Spawn Button
         TextField xField = new TextField("0");
         TextField yField = new TextField("10");
         TextField zField = new TextField("0");
@@ -109,7 +109,7 @@ public class Physics3DApp extends Application {
         timer.start();
     }
 
-    private void addCube(Vector3 position) {
+    private void addCube(Vector3 position){
         RigidBody body = new RigidBody(position, 1.0, false);
         engine.addBody(body);
 

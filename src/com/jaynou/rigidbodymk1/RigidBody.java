@@ -3,15 +3,17 @@ package com.jaynou.rigidbodymk1;
 public class RigidBody {
     public Vector3 position;
     public Vector3 velocity;
+    public Vector3 size;
     public double mass;
     public boolean isStatic;
-    public double size = 1.0; // Assuming cube
+
 
     public RigidBody(Vector3 pos, double mass, boolean isStatic) {
         this.position = pos;
         this.velocity = new Vector3(0, 0, 0);
         this.mass = mass;
         this.isStatic = isStatic;
+        this.size = new Vector3(1, 1, 1);
     }
 
     public void applyForce(Vector3 force, double dt) {
@@ -27,3 +29,4 @@ public class RigidBody {
         }
     }
 }
+
