@@ -12,6 +12,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.Shape3D;
+import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
@@ -20,7 +22,7 @@ import java.util.List;
 
 public class Physics3DApp extends Application {
     private PhysicsEngine engine = new PhysicsEngine();
-    private List<Box> bodyMeshes = new ArrayList<>();
+    private List<Shape3D> bodyMeshes = new ArrayList<>();
     private Group root = new Group();
 
 
@@ -55,8 +57,9 @@ public class Physics3DApp extends Application {
         TextField yField = new TextField("10");
         TextField zField = new TextField("0");
         Button spawnButton = new Button("Spawn Cube");
+        Button spawnSphere = new Button("Spawn Sphere");
 
-        HBox controls = new HBox(10, new Label("X:"), xField, new Label("Y:"), yField, new Label("Z:"), zField, spawnButton);
+        HBox controls = new HBox(10, new Label("X:"), xField, new Label("Y:"), yField, new Label("Z:"), zField, spawnButton, spawnSphere);
         controls.setPadding(new Insets(10));
         controls.setStyle("-fx-background-color: rgba(255,255,255,0);");
 
@@ -67,6 +70,17 @@ public class Physics3DApp extends Application {
                 double y = Double.parseDouble(yField.getText());
                 double z = Double.parseDouble(zField.getText());
                 addCube(new Vector3(x, y, z));
+            } catch (NumberFormatException ex) {
+                System.out.println("Put in a number");
+            }
+        });
+
+        spawnSphere.setOnAction(e -> {
+            try {
+                double x = Double.parseDouble(xField.getText());
+                double y = Double.parseDouble(yField.getText());
+                double z = Double.parseDouble(zField.getText());
+                addSphere(new Vector3(x, y, z));
             } catch (NumberFormatException ex) {
                 System.out.println("Put in a number");
             }
@@ -94,7 +108,7 @@ public class Physics3DApp extends Application {
                 int meshIndex = 0;
                 for (RigidBody body : engine.getBodies()) {
                     if (!body.isStatic) {
-                        Box box = bodyMeshes.get(meshIndex++);
+                        Shape3D box = bodyMeshes.get(meshIndex++);
                         box.setTranslateX(body.position.x);
                         box.setTranslateY(-body.position.y);
                         box.setTranslateZ(body.position.z);
@@ -113,6 +127,16 @@ public class Physics3DApp extends Application {
         box.setMaterial(new PhongMaterial(Color.hsb(Math.random() * 360, 1.0, 1.0)));
         root.getChildren().add(box);
         bodyMeshes.add(box);
+    }
+
+    private void addSphere(Vector3 position){
+        RigidBody body = new RigidBody(position, 1.0, false);
+        engine.addBody(body);
+
+        Sphere sphere = new Sphere();
+        sphere.setMaterial(new PhongMaterial(Color.hsb(Math.random() * 360, 1.0, 1.0)));
+        root.getChildren().add(sphere);
+        bodyMeshes.add(sphere);
     }
 }
 
