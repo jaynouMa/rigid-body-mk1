@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhysicsEngine {
-    private List<RigidBody> bodies = new ArrayList<>();
+    private ArrayList<RigidBody> bodies = new ArrayList<>();
     private Vector3 gravity = new Vector3(0, -9.81, 0);
 
     public void addBody(RigidBody body){
@@ -70,12 +70,9 @@ public class PhysicsEngine {
         double velAlongNormal = rv.x * n.x + rv.y * n.y + rv.z * n.z;
         if (velAlongNormal > 0) return; // They're separating
 
-        double e = 0.5; // Restitution
         double invMassA = 1.0 / a.mass;
         double invMassB = 1.0 / b.mass;
-
-        double j = -(1 + e) * velAlongNormal / (invMassA + invMassB);
-
+        double j = -0.5 * velAlongNormal / (invMassA + invMassB);
 
         Vector3 impulse = new Vector3(n.x * j, n.y * j, n.z * j);
         a.velocity = b.velocity.subtract(impulse.multiply(invMassA));

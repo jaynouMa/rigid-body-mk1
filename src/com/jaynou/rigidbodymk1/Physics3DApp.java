@@ -43,15 +43,12 @@ public class Physics3DApp extends Application {
         camera.setTranslateZ(-28);
         camera.setTranslateY(-15);
         camera.setTranslateX(-9);
-        camera.setNearClip(0.1);
-        camera.setFarClip(1000);
         Rotate rotateX = new Rotate(-25, Rotate.X_AXIS);
         Rotate rotateY = new Rotate(16, Rotate.Y_AXIS);
         camera.getTransforms().addAll(rotateX, rotateY);
 
         SubScene subScene = new SubScene(root, 800, 600, true, SceneAntialiasing.BALANCED);
         subScene.setCamera(camera);
-        subScene.setFill(Color.LIGHTGRAY);
 
         // Spawn Button
         TextField xField = new TextField("0");
@@ -71,7 +68,7 @@ public class Physics3DApp extends Application {
                 double z = Double.parseDouble(zField.getText());
                 addCube(new Vector3(x, y, z));
             } catch (NumberFormatException ex) {
-                System.out.println("Invalid input");
+                System.out.println("Put in a number");
             }
         });
 
@@ -79,13 +76,12 @@ public class Physics3DApp extends Application {
         StackPane layout = new StackPane();
         layout.getChildren().addAll(subScene, controls);
         StackPane.setMargin(controls, new Insets(10));
-
         Scene scene = new Scene(layout, 800, 600);
-        primaryStage.setTitle("JavaFX 3D Rigid Body Simulator");
+        primaryStage.setTitle("apcsa final project");
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        // === PHYSICS SIMULATION LOOP ===
+        // ticks
         AnimationTimer timer = new AnimationTimer() {
             long lastTime = System.nanoTime();
             @Override

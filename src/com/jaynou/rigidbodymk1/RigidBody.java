@@ -7,7 +7,6 @@ public class RigidBody {
     public double mass;
     public boolean isStatic;
 
-
     public RigidBody(Vector3 pos, double mass, boolean isStatic) {
         this.position = pos;
         this.velocity = new Vector3(0, 0, 0);
